@@ -7,6 +7,10 @@ name = "pypi"
 requests = "*"
 requests-html = "*"
 loguru = "*"
+paco = "*"
+simplejson = "*"
+python-box = "*"
+maya = "*"
 
 [dev-packages]
 

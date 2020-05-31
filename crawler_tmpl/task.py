@@ -1,4 +1,5 @@
-
+# start_url = 'https://www.xiaohongshu.com/discovery/item/5ebac8aa000000000100240a'
+start_url = 'https://www.xiaohongshu.com/user/profile/5990bfe35e87e72c8c9d8d7c'
 
 class Task:
 
