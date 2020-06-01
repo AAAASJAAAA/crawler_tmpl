@@ -1,5 +1,5 @@
 from crawler_tmpl.task import Task
-from crawler_tmpl.xhs_main import Fetcher
+from crawler_tmpl.fetcher import Fetcher
 
 import paco
 from requests_html import AsyncHTMLSession

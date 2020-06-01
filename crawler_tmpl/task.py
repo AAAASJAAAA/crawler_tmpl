@@ -11,4 +11,3 @@ class Task:
     @classmethod
     def build_from_url(cls, url):
         return cls(url)
-
