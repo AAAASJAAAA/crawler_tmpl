@@ -11,6 +11,7 @@ paco = "*"
 simplejson = "*"
 python-box = "*"
 maya = "*"
+pyexecjs = "*"
 
 [dev-packages]
 

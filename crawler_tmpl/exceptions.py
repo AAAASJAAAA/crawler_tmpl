@@ -10,3 +10,11 @@ class PlatformItemError(CrawlerTmplError):
     def __str__(self):
         return f'platform item error: {self.info}'
 
+
+class CaptchaError(CrawlerTmplError):
+    """Raise when meet captcha"""
+    def __init__(self, url):
+        self.url = url
+
+    def __str__(self):
+        return f"CAPTCHA: {self.url}"

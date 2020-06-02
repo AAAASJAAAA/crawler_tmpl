@@ -1,3 +1,4 @@
 Pipfile.lock
 data.json
 profile_data.json
+__pycache__/

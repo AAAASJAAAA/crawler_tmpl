@@ -3,7 +3,9 @@ from crawler_tmpl.weibo_fetcher import WeiboFetcher
 
 import paco 
 
-profile_url = 'https://weibo.com/u/7283431349'
+# profile_url = 'https://m.weibo.cn/api/container/getIndex?jumpfrom=weibocom&type=uid&value={uid}'
+profile_url = 'https://m.weibo.cn/api/container/getIndex?jumpfrom=weibocom&type=uid&value=7283431349'
+
 
 
 

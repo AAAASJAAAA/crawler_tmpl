@@ -4,13 +4,14 @@ from loguru import logger
 import asyncio
 import paco
 import simplejson as json
-from box import Box
+from box import Box, BoxError
+from crawler_tmpl.exceptions import CaptchaError, PlatformItemError
+import execjs
 from crawler_tmpl.task import Task
 from asyncio import Queue
 
 
-
-start_url = 'https://weibo.com/u/7283431349?refer_flag=1005055013_&is_all=1'
+start_url = 'https://m.weibo.cn/api/container/getIndex?jumpfrom=weibocom&type=uid&value=7283431349'
 session = AsyncHTMLSession()
 
 
@@ -29,23 +30,23 @@ class WeiboFetcher:
         await asyncio.sleep(2)
         return task
 
-    def _get_json_content(self, task: Task) -> str:
-        content = task.response.html.find('script')[-1].text[
-            len('window.__INITIAL_SSR_STATE__='):
-        ]
-        return content.replace("undefined", "null")
 
-    def _get_box(self, content) -> Box:
-        box = Box(json.loads(content))
-        if "ErrorPage" in box:
-            asyncio.sleep(3)
-            raise PlatformItemError(box.ErrorPage.info)
-        return box
+    async def parse_profile(self, task: Task) -> Task:
 
-    def parse_profile(self, task: Task) -> Task:
 
-        logger.info(task.response.html.text)
-        raw_data = task.response.json()
+        if task.response is not None and not task.response.ok:
+            # status codes occured so far:
+            # - 418: teapot
+            # - 502: proxy failed
+            # - others.
+            raise CaptchaError(task.original_url)
+
+        raw_data = task.get_extras("data")
+        if not raw_data:
+            raw_data = task.response.json()
+        elif isinstance(raw_data, str):
+            raw_data = json.loads(raw_data)
+
         try:
             box = Box(raw_data).data.userInfo
             item = {
@@ -55,13 +56,12 @@ class WeiboFetcher:
                 "desc": box.description,
                 "fans": box.followers_count,
                 "follows": box.follow_count,
-                # "likes": box.liked,
-                # "favs": box.collected,
             }
             task.parsed_result = item
             return task
-        except Exception as e:
-            logger.error(e)
+        except BoxError as e:
+            logger.exception(f"Parsing raw_data error: {e}, {raw_data=}")
+            raise PlatformItemError(task.url, str(raw_data)) from e
 
 
     def parse_post(self, task: Task) -> Task:
@@ -96,9 +96,8 @@ class WeiboFetcher:
             raise e
 
 
-
     async def run(self, task: Task):
         task = await self.get_resp(task)
-        task = self.parse_profile(task)
+        task = await self.parse_profile(task)
         logger.info(task.parsed_result)
         

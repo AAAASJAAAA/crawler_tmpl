@@ -7,7 +7,11 @@ class Task:
         self.response = None
         self.parse_result = None
         self.url = url
+        self.extras = None
 
     @classmethod
     def build_from_url(cls, url):
         return cls(url)
+
+    def get_extras(self, key):
+        return (self.extras or {}).get(key)
